@@ -4,18 +4,16 @@ import java.util.*;
 import uk.ac.aber.rcs.cs211.schedulersim.*;
 
 /**
- * A first come, first served scheduling algorithm.
- * It will keep re-presenting the same job each time getNextjob is called, until
- * that job is removed from the queue, either because it has finished, or it gets
- * blocked for I/O. 
- * @author rcs
+ * This is a primitive implementation of the lottery scheduling algorithm
+ * Based off roundrobin class
+ * @author thr2 & rcs
  * @see uk.ac.aber.rcs.cs211.schedulersim.Simulator
  *
  */
 public class Lottery implements Scheduler {
 
 	protected ArrayList<Job> queue;
-	private int numberOfJobs, count;
+	private int numberOfJobs, count; //added count for the number of ticks that a task is carried out
 	
 	public Lottery () {
 		this.queue = new ArrayList<Job>();
@@ -39,21 +37,28 @@ public class Lottery implements Scheduler {
 		Job lastJobReturned;
 		if (this.numberOfJobs<1) throw new SchedulerException("Empty Queue");
 		lastJobReturned = (Job)this.queue.get(0);
+		//we increment are timer for the round robin approach 
 		count++;
 		return lastJobReturned;
 	}
-
+	/**
+	 * When we return a job to the queue after doing a execution step
+	 * when the executing process reaches a random number of ticks then we shuffle the collection and choose another job
+	 */
 	public void returnJob(Job job) throws SchedulerException {
-		if (!this.queue.contains(job)) throw new SchedulerException("Job not on Queue");
-		Collections.shuffle(this.queue, new Random(System.nanoTime()));
-		if (count == new Random().nextInt(50))
+		if (!this.queue.contains(job)) throw new SchedulerException("Job not on Queue");	
+		//get a random int and then check if the number of tick we have is greater than that
+		if (count > new Random().nextInt(10))
 		{
+			//shuffle are collection so that it is a lottery which job gets chosen
+			Collections.shuffle(this.queue, new Random(System.nanoTime()));
+			//return are ticks to nothing
 			count = 0;
-			this.queue.remove(job);
-			this.queue.add(job);
 		}
 	}
-
+	/**
+	 * This method removes the job when it has completed and will reset the counters on the round robin approach implemented
+	 */
 	public void removeJob(Job job) throws SchedulerException {
 		if (!this.queue.contains(job)) throw new SchedulerException("Job not on Queue");
 		this.queue.remove(job);

@@ -4,6 +4,7 @@ import java.util.*;
 import uk.ac.aber.rcs.cs211.schedulersim.*;
 
 /**
+ * This is a simple implementation shortest first algorithem 
  * @author thr2
  * @see uk.ac.aber.rcs.cs211.schedulersim.Simulator
  *
@@ -18,6 +19,9 @@ public class ShortestFirst implements Scheduler {
 		//this.numberOfJobs=0;
 	}
 	
+	/**
+	 * We use a insertion sort to add the new job to the correct location in the queue with the job with the shortest length first
+	 */
 	public void addNewJob(Job job) throws SchedulerException {
 		if (this.queue.contains(job)) throw new SchedulerException("Job already on Queue");
 		//this.queue.add(this.numberOfJobs, job);
@@ -54,10 +58,11 @@ public class ShortestFirst implements Scheduler {
 		lastJobReturned = (Job)this.queue.get(0);
 		return lastJobReturned;
 	}
-
+	/**
+	 * When we get the job given back, we resort the collection to make sure nothing has gone out of order
+	 */
 	public void returnJob(Job job) throws SchedulerException {
 		if (!this.queue.contains(job)) throw new SchedulerException("Job not on Queue");
-		// nothing to do in this implementation.
 		Collections.sort(this.queue, new compar());
 	}
 

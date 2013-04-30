@@ -4,18 +4,15 @@ import java.util.*;
 import uk.ac.aber.rcs.cs211.schedulersim.*;
 
 /**
- * A first come, first served scheduling algorithm.
- * It will keep re-presenting the same job each time getNextjob is called, until
- * that job is removed from the queue, either because it has finished, or it gets
- * blocked for I/O. 
- * @author rcs
+ * Based of RCS's First Come First Serve Class, this is a very simple implementation of the round robin scheduling approach 
+ * @author thr2 & rcs
  * @see uk.ac.aber.rcs.cs211.schedulersim.Simulator
  *
  */
 public class RoundRobin implements Scheduler {
 
 	protected ArrayList<Job> queue;
-	private int numberOfJobs, cyclesperjob;
+	private int numberOfJobs, cyclesperjob; //added a variable to keep track of how many ticks a specific job takes
 	
 	public RoundRobin () {
 		this.queue = new ArrayList<Job>();
@@ -39,10 +36,13 @@ public class RoundRobin implements Scheduler {
 		Job lastJobReturned;
 		if (this.numberOfJobs<1) throw new SchedulerException("Empty Queue");
 		lastJobReturned = (Job)this.queue.get(0);
-		this.cyclesperjob++;
+		this.cyclesperjob++; //when we return the current job we increment the timer
 		return lastJobReturned;
 	}
-
+	/**
+	 * This method is called when the job is returned after a single execution
+	 * in a round robin once the process has got to a specific number then it resets the array counter to 0 then removes and readds the job to the queue
+	 */
 	public void returnJob(Job job) throws SchedulerException {
 		if (!this.queue.contains(job)) throw new SchedulerException("Job not on Queue");
 		if (this.cyclesperjob == 4)
@@ -52,12 +52,12 @@ public class RoundRobin implements Scheduler {
 			this.queue.add(job);
 		}
 	}
-
+	
 	public void removeJob(Job job) throws SchedulerException {
 		if (!this.queue.contains(job)) throw new SchedulerException("Job not on Queue");
 		this.queue.remove(job);
 		this.numberOfJobs--;
-		this.cyclesperjob = 0;
+		this.cyclesperjob = 0; //reset the count of how many ticks we have done.
 	}
 
 	public void reset() {
